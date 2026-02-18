@@ -8,35 +8,18 @@
 #define PORT 8898
 #define MAX_CONN 10
 #define BUFFER_SIZE 1024
+#define MAX_VAL_SIZE 1000
 
 typedef struct {
     int client_sock;
     struct sockaddr_in client_addr;
 } client_data_t;
 
-void *handle_client_threads(void *arg) {
-    client_data_t *data = (client_data_t *)arg;
-    char buffer[BUFFER_SIZE];
-    ssize_t bytes_read;
 
-    // Handle client interaction (Echo server)
-    while ((bytes_read = read(data->client_sock, buffer, sizeof(buffer))) > 0) {
-        write(data->client_sock, buffer, bytes_read);
-    }
+void getReq(FILE* db, int key);
+void putReq(FILE* db, int key, char* val);
+void delReq(FILE* db,int key);
 
-    if (bytes_read == 0) {
-        printf("Client disconnected from %s:%d\n",
-               inet_ntoa(data->client_addr.sin_addr),
-               ntohs(data->client_addr.sin_port));
-    } 
-    else if (bytes_read == -1) {
-        perror("Error reading from socket");
-    }
-
-    close(data->client_sock);
-    free(data);               // Free allocated memory
-    pthread_exit(NULL);
-}
 
 
 int main(){
@@ -73,5 +56,5 @@ int main(){
 
     printf("Server listening on port %d...\n", PORT);
 
-    
+
 }
